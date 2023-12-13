@@ -153,7 +153,7 @@ function instaGPX(gpxData, imgData, outputSize) {
         elevation : Math.round(gpxData.elevation.gain),
         speed : (config.units == 'metric') ? (gpxData.speed.kmh).toFixed(1) : (gpxData.speed.mih).toFixed(1),
         pace : _pace.minutes +'\''+ String(_pace.seconds).padStart(2, '0'),
-        optionLabel : ((config.show == 'elevation') ? 'elevation' : (config.activity == 'ride') ? 'speed' : 'pace')
+        optionLabel : 'elevation'
     }
 
     let _canvas = document.createElement('canvas')
@@ -180,19 +180,6 @@ function instaGPX(gpxData, imgData, outputSize) {
                 let _h = imgData.height;
                 let _x = 0;
                 let _y = 0;
-
-                if ( _outputRatio > _imgRatio ) { // Input is narrower than output target
-
-                    _w = imgData.width;
-                    _h = imgData.width / _outputRatio;
-                    _y = (imgData.height - _h) / 2;
-
-                } else { // Input is wider that output target
-
-                    _w = imgData.height * _outputRatio;
-                    _h = imgData.height;
-                    _x = (imgData.width - _w) / 2;
-                }
 
             ctx.drawImage(_srcCanvas,
                 _x, _y, _w, _h,
@@ -269,13 +256,38 @@ function instaGPX(gpxData, imgData, outputSize) {
             _xDurationOffset += txtSize.duration[i].v + txtSize.duration[i].u + (config.wordSpacing*2);
         })
 
-        ctx.fillText(output[output.optionLabel], (config.padding*3) + (_third*2), outputSize.height - config.padding);
+        let optionUnitsWidths = ctx.measureText(output[output.optionLabel]).width + ctx.measureText('m').width - 5;
+        let optionUnitsXs = outputSize.width - config.padding - optionUnitsWidths;
+
+        ctx.fillText(output[output.optionLabel], optionUnitsXs, outputSize.height - config.padding);
         txtSize.option = ctx.measureText(output[output.optionLabel]).width;
 
         // ----------------
         // Def
         ctx.fillStyle = "rgba(255, 255, 255, .5)";
         ctx.font = '36px Montserrat';
+        // Assume optionUnitsX and optionUnitsWidth are already calculated as in previous steps
+        let distanceFieldX = optionUnitsX - txtSize.distance - config.wordSpacing;  // X-coordinate for distance field
+            
+        // Set fill style and font for distance unit
+        ctx.fillStyle = "rgba(255, 255, 255, .5)";
+        ctx.font = '36px Montserrat';
+            
+        // Draw the distance unit
+        ctx.fillText(output.distanceUnit, distanceFieldX, outputSize.height - config.padding);
+            
+        // Calculate the starting x-coordinate for duration units
+        let durationStartX = distanceFieldX - config.wordSpacing;  // Adjust this as needed
+            
+        // Draw each duration unit
+        output.duration.forEach((el, i) => {
+            if (el.u) {
+                // Adjust x-coordinate based on the width of each duration unit
+                durationStartX -= (txtSize.duration[i].u + config.wordSpacing);
+                ctx.fillText(el.u, durationStartX, outputSize.height - config.padding);
+            }
+        });
+
         ctx.fillText(output.distanceUnit, config.padding + txtSize.distance + config.wordSpacing, outputSize.height - config.padding);
 
         _xDurationOffset = 0; // Reset
@@ -285,10 +297,15 @@ function instaGPX(gpxData, imgData, outputSize) {
             _xDurationOffset += config.wordSpacing + txtSize.duration[i].u;
         })
 
-        let _optionUnits = (output.optionLabel == 'elevation') ? 'm' : (output.optionLabel == 'speed')
-            ? (config.units == 'metric') ? 'km/h' : 'mi/h'
-            : (config.units == 'metric') ? '/km' : '/mile';
-        ctx.fillText(_optionUnits, (config.padding*3) + (_third*2) + txtSize.option + config.wordSpacing, outputSize.height - config.padding);
+        let _optionUnits = 'm'
+        // Measure _optionUnits text width
+        let optionUnitsWidth = ctx.measureText(_optionUnits).width;
+            
+        // Calculate right-aligned x position
+        let optionUnitsX = outputSize.width - config.padding - optionUnitsWidth;
+            
+        // Draw the _optionUnits
+        ctx.fillText(_optionUnits, optionUnitsX, outputSize.height - config.padding);
 
         // ----------------
         // Labels
@@ -299,7 +316,15 @@ function instaGPX(gpxData, imgData, outputSize) {
         let _labelOffsetY = 70;
         ctx.fillText('DISTANCE', config.padding, outputSize.height - config.padding - _labelOffsetY);
         ctx.fillText('ACTIVITY TIME', config.padding*2 + _third, outputSize.height - config.padding - _labelOffsetY);
-        ctx.fillText(output.optionLabel.toUpperCase(), (config.padding*3) + (_third*2), outputSize.height - config.padding - _labelOffsetY);
+
+        let optionLabelWidth = ctx.measureText(output.optionLabel.toUpperCase()).width;
+
+        // Calculate right-aligned x position
+        let optionLabelX = outputSize.width - config.padding - optionLabelWidth;
+
+        // Draw the optionLabel
+        ctx.fillText(output.optionLabel.toUpperCase(), optionLabelX, 
+                    outputSize.height - config.padding - _labelOffsetY);
 
         ctx.textBaseline = 'hanging';
 
@@ -311,14 +336,11 @@ function instaGPX(gpxData, imgData, outputSize) {
                 _datetime = _datetime.toUpperCase()
         }
         let _top = [];
-        // ¯\_(ツ)_/¯
-        if (config.promote) {
-            _top.push(atob("t92YugHcnFGdz5Wa".split('').reverse().join('')).trim().toUpperCase());
-        }
+
         if (!!_datetime) {
-            _top.push(config.activity.toUpperCase());
             _top.push(_datetime)
         }
+        
         ctx.fillText(_top.join(' / '), config.padding, config.padding);
 
         // ----------------
@@ -353,7 +375,7 @@ function instaGPX(gpxData, imgData, outputSize) {
 
         _canvas.toBlob(function(blob) {
 
-            let _output = new File([blob], 'instagpx.com.jpg', { type : 'image/jpeg', lastModified: Date.now() });
+            let _output = new File([blob], 'hello.com.jpg', { type : 'image/jpeg', lastModified: Date.now() });
             let objectURL = URL.createObjectURL(_output);
 
             let _img = document.createElement('img');
