@@ -1,13 +1,5 @@
 
-# InstaGPX - Add GPX activity stats to your photos
-
-> Create beautiful sharing pictures adding activity stats from a GPX file to your photos with InstaGPX.
-
-Client side image manipulation WebApp created with [Vue](https://vuejs.org/), [Parcel](https://en.parceljs.org/), [Sass](https://sass-lang.com/).
-
-[![ImageGPX](static/images/share/instagpx.jpg)](https://instagpx.com)
-
----
+# Forked from InstaGPX - Add GPX activity stats to your photos
 
 #### This project is under the terms of the GNU General Public License v3.0
 
