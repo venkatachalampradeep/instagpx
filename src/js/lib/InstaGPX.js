@@ -162,11 +162,6 @@ function instaGPX(gpxData, imgData, outputSize) {
 
     let ctx = _canvas.getContext('2d');
 
-
-        // ---
-        // Attach Image
-        // if (imgData) { ctx.putImageData(imgData, 0, 0) }
-
             let _srcCanvas = document.createElement('canvas');
                 _srcCanvas.width = imgData.width;
                 _srcCanvas.height = imgData.height;
@@ -186,13 +181,7 @@ function instaGPX(gpxData, imgData, outputSize) {
                 0, 0, outputSize.width, outputSize.height
             );
 
-
         // ---
-        // Styles['montserrat'](ctx, config);
-
-        // ---
-        // Overlaying Shadow BG
-        // ctx.globalCompositeOperation = 'overlay';
         ctx.globalCompositeOperation = 'multiply';
 
         // ---
@@ -245,9 +234,11 @@ function instaGPX(gpxData, imgData, outputSize) {
 
         // ----------------
         // Values output
-        // ctx.font = '72px Montserrat';
+        let _labelOffsetY = 80;
+        if (config.showText) {
         ctx.font = '64px Montserrat';
-        ctx.fillText(output.distance, config.padding, outputSize.height - config.padding);
+            ctx.fillText(output.distance, config.padding, outputSize.height - config.padding);
+                
         txtSize.distance = ctx.measureText(output.distance).width;
 
         let _xDurationOffset = 0;
@@ -255,13 +246,12 @@ function instaGPX(gpxData, imgData, outputSize) {
             ctx.fillText(el.v, config.padding*2 + _third + _xDurationOffset, outputSize.height - config.padding);
             _xDurationOffset += txtSize.duration[i].v + txtSize.duration[i].u + (config.wordSpacing*2);
         })
-
+        
         let optionUnitsWidths = ctx.measureText(output[output.optionLabel]).width + ctx.measureText('m').width - 5;
         let optionUnitsXs = outputSize.width - config.padding - optionUnitsWidths;
 
         ctx.fillText(output[output.optionLabel], optionUnitsXs, outputSize.height - config.padding);
         txtSize.option = ctx.measureText(output[output.optionLabel]).width;
-
         // ----------------
         // Def
         ctx.fillStyle = "rgba(255, 255, 255, .5)";
@@ -309,11 +299,7 @@ function instaGPX(gpxData, imgData, outputSize) {
 
         // ----------------
         // Labels
-        // ctx.globalCompositeOperation = 'overlay';
-
         ctx.font = '24px Montserrat';
-        // let _labelOffsetY = 80;
-        let _labelOffsetY = 70;
         ctx.fillText('DISTANCE', config.padding, outputSize.height - config.padding - _labelOffsetY);
         ctx.fillText('ACTIVITY TIME', config.padding*2 + _third, outputSize.height - config.padding - _labelOffsetY);
 
@@ -325,6 +311,7 @@ function instaGPX(gpxData, imgData, outputSize) {
         // Draw the optionLabel
         ctx.fillText(output.optionLabel.toUpperCase(), optionLabelX, 
                     outputSize.height - config.padding - _labelOffsetY);
+        }
 
         ctx.textBaseline = 'hanging';
 
@@ -340,15 +327,12 @@ function instaGPX(gpxData, imgData, outputSize) {
         if (!!_datetime) {
             _top.push(_datetime)
         }
-        
+        if (config.showText) {        
         ctx.fillText(_top.join(' / '), config.padding, config.padding);
-
+        }
         // ----------------
         // Title
         ctx.fillStyle = "#fff";
-        // ctx.font = '64px Montserrat';
-        // let _titleOffset = (_top.length) ? 42 : 0;
-        // wrapText(ctx, (config.title).toUpperCase().trim().replace(/\s\s+/g, ' '), config.padding, config.padding + _titleOffset, outputSize.width - (config.padding*2), 72);
         ctx.font = '52px Montserrat';
         let _titleOffset = (_top.length) ? 42 : 0;
         wrapText(ctx, (config.title).toUpperCase().trim().replace(/\s\s+/g, ' '), config.padding, config.padding + _titleOffset, outputSize.width - (config.padding*2), 58);
@@ -370,8 +354,6 @@ function instaGPX(gpxData, imgData, outputSize) {
         // ----------------
         // Render
         document.querySelector('#output').innerHTML = '';
-        // document.querySelector('#output').appendChild(_canvas);
-
 
         _canvas.toBlob(function(blob) {
 
@@ -385,25 +367,7 @@ function instaGPX(gpxData, imgData, outputSize) {
 
             document.querySelector('#output').appendChild(_img);
             document.querySelector('#download-img').href = objectURL;
-            // window.URL.revokeObjectURL(objectURL);
-
         }, 'image/jpeg', .65);
-
-
-
-        /*
-        // Render on an Image tag
-        let _dataURL = _canvas.toDataURL('image/jpeg', .5);
-        let _img = document.createElement('img');
-            _img.src = _dataURL;
-            _img.addEventListener('contextmenu', (e) => { e.preventDefault() }, true);
-
-            document.querySelector('#output').appendChild(_img);
-
-        let _lnk = document.querySelector('#download-img');
-            _lnk.href = _dataURL;
-        */
-
 }
 
 export default instaGPX;
