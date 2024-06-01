@@ -1,0 +1,24 @@
+{
+  "short_name": "InstaGPX",
+  "name": "InstaGPX. Create beautiful pictures from your GPX files",
+  "description" : "Generate images with your GPX activity stats, route track map and your own pictures with InstaGPX",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./img/icons/instagpx-logo-48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "./img/icons/instagpx-logo-96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "./img/icons/instagpx-logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.html?launcher=true"
+}

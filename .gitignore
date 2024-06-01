@@ -1,0 +1,8 @@
+node_modules/
+.netlify
+.cache
+.localserver
+.npm
+.env
+.DS_Store
+.htaccess

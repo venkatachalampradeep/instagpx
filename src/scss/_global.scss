@@ -1,0 +1,336 @@
+@import "./_variables.scss";
+
+/* Pseudo-Reset */
+html, body, h1, h2, h3, h4, p, ul, ol, li, dl, dd, dt, figure, form, fieldset, hr , pre {
+    margin: 0;
+    padding: 0;
+}
+li { list-style-type: none; }
+article, aside, footer, header, main, menu, nav, section {
+	display: block;
+}
+button, input, select, textarea {
+    font: inherit;
+	color: inherit;
+	margin: 0;
+    padding: 0;
+    text-transform: none;
+}
+
+/* --- */
+
+
+html {
+    line-height: 1;
+	text-size-adjust: 100%;
+	box-sizing: border-box;
+	font-size: 62.5%;
+	tab-size: 4;
+	word-break: break-word;
+    cursor: default;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Droid Sans", "Helvetica Neue", Arial, sans-serif;;
+    font-size: 1.3em;
+    line-height: 1.6;
+    background: #f7f7f7;
+    color: #2a2a2a;
+}
+html, body {
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+*, *:before, *:after {
+	box-sizing: inherit;
+	background-repeat: no-repeat;
+}
+
+hr {
+    background: transparent;
+    border: solid transparent 1px;
+    border-bottom: solid #ccc 1px;
+    height: 1px;
+    margin: 2rem 0;
+}
+a {
+    color: $color-primary-dark;
+    text-decoration: none;
+    border-bottom: solid transparent 2px;
+    transition: color .35s ease-in-out, border .35s ease-in-out;
+
+    &:hover {
+        color: #000;
+        border-bottom: solid $color-primary-light 2px;
+    }
+}
+
+// Hide template elements when loading
+[v-cloak] { display: none; }
+
+// --------------------------------------
+// Form Elements
+%button {
+
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: top;
+    min-width: auto;
+    max-width: 100%;
+
+    background-color: $color-primary-light;
+    color: #fff;
+    display: inline-block;
+    cursor: pointer;
+    padding: 12px 18px;
+    border-radius: 0;
+    border: solid $color-primary-light 1px;
+    box-shadow: 0 5px 1px -2px rgba(0, 0, 0, .1);
+
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
+    transition: all .25s ease-in-out;
+
+    &:before {
+        content: '';
+        display: inline-block;
+        position: relative;
+        top: 3px;
+        width: 16px;
+        height: 16px;
+        margin: 0 5px 0 0;
+        vertical-align: baseline;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+        opacity: .7;
+        transition: opacity .25s ease-in-out;
+    }
+
+    &:hover {
+        color: #fff;
+        background: $color-primary-dark;
+        border: solid $color-primary-dark 1px;
+        box-shadow: 0 5px 5px -5px rgba(0, 0, 0, .1);
+    }
+
+    &:focus {
+        border: solid $color-primary-dark 1px;
+        box-shadow: 0 0 2px 0 $color-primary-dark;
+        outline: none;
+    }
+}
+.button {
+    @extend %button;
+
+    background-color: $color-primary-dark;
+    border: solid $color-primary-dark 1px;
+    padding: 16px 18px;
+
+    &:before { background-image: url(../../img/ui/icon-download.svg) }
+    &:hover {
+        background-color: $color-fg-dark !important;
+        border: solid $color-fg-dark 1px;
+    }
+}
+
+[role="form"] {
+
+    button, input, select {
+    	color: inherit;
+    	font: inherit;
+    	margin: 0;
+    }
+    button {
+    	overflow: visible;
+    }
+    button, select {
+    	text-transform: none;
+    }
+    input[type="checkbox"], input[type="radio"] {
+    	padding: 0;
+    }
+
+    input[type="file"] {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+    input[type="file"] + label {
+        @extend %button;
+
+        &[for="user-file-gpx"]:before { background-image: url(../../img/ui/icon-location.svg) }
+        &[for="user-file-image"]:before { background-image: url(../../img/ui/icon-photo.svg) }
+    }
+    button[type="submit"] {
+        @extend %button;
+        &:before { background-image: url(../../img/ui/icon-refresh.svg) }
+    }
+
+    input[type="file"] + label * { pointer-events: none }
+    input[type="file"]:focus + label,
+    input[type="file"] + label:hover {
+        background-color: $color-primary-dark;
+    }
+
+    .form-selector {
+        position: relative;
+        display: block;
+
+        input { opacity: 0 }
+        label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: .2rem .2rem .2rem 2.4rem;
+            line-height: 1.6rem;
+            cursor: pointer;
+
+            &:before, &:after {
+                position: absolute;
+                top: .2rem;
+                left: .2rem;
+                content: '';
+                display: block;
+                width: 16px;
+                height: 16px;
+            }
+            &:before {
+                background-color: lighten($color-primary-light, 15%);
+            }
+            &:after {
+                background-color: $color-primary-dark;
+            }
+        }
+
+        input + label:after { content: none }
+        input:checked + label:after { content: '' }
+        input:checked + label:before { content: none }
+
+        input:focus + label::after {
+            box-shadow: 0 0 2px 0 $color-primary-dark;
+        }
+
+        &.form-checkbox {
+            label {
+                &:before, &:after {
+                    border-radius: 2px;
+                }
+                &:after {
+                    background-image: url(./../../img/ui/icon-check-negative.svg);
+                    background-size: 14px auto;
+                    background-position: center center;
+                }
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        &.form-radio {
+            label {
+                &:before, &:after {
+                    border-radius: 16px;
+                }
+                &:after {
+                    border: solid lighten($color-primary-light, 15%) 4px;
+                }
+
+                max-width: 90%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+
+    .form-radio-container {
+        max-width: 32rem;
+        display: flex;
+        .form-radio { flex: 1 }
+    }
+
+    ::-webkit-input-placeholder { color: #b9bfdf }
+    :-ms-input-placeholder { color: #b9bfdf }
+    ::placeholder { color: #b9bfdf }
+
+    input[type="text"], select {
+
+        -webkit-appearance: none;
+    	-moz-appearance: none;
+    	appearance: none;
+        background: #fff;
+        border: solid lighten($color-primary-light, 25%) 1px;
+        border-radius: 0;
+        display: inline-block;
+        vertical-align: top;
+        padding: .4rem 1rem;
+        width: 100%;
+        max-width: 48rem;
+        color: #404970;
+
+        &:focus {
+            border: solid $color-primary-dark 1px;
+            box-shadow: 0 0 2px 0 $color-primary-dark;
+            outline: none;
+        }
+    }
+    select {
+        background-image: url(./../../img/ui/arrow-select.svg);
+        background-repeat: no-repeat;
+    	background-size: 10px 8px;
+    	background-position: right 1rem center;
+        padding: .5rem 3rem .5rem 1rem;
+    }
+
+    h3 {
+        display: none;
+        font-size: 80%;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0 0 1rem 0;
+        padding: 1rem 0 0;
+        border-top: dotted #a9afcf 1px;
+    }
+
+    h4, .form-input-container label {
+        display: block;
+        font-size: 80%;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: $color-fg-medium;
+        margin: .5rem 0 .3rem;
+    }
+
+    .form-input-container,
+    .form-radio-container,
+    .form-selector.form-checkbox {
+        padding: 0 0 .5rem;
+    }
+    .form-selector.form-checkbox {
+        margin: .25rem 0 0;
+    }
+    .form-submit-container {
+        padding: 1rem 0 0;
+    }
+
+}
+
+// ------
+// InstaGPX Output:
+
+#output {
+
+    border-radius: .5rem;
+    overflow: hidden;
+
+    canvas, img {
+        display: block;
+        width: 100%;
+        max-width: 512px;
+    }
+}
