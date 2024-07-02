@@ -23,7 +23,7 @@ function createMap(points, size, provider, callback) {
                     steps : 100, // ~ 100
                     endpoint : 'https://api.mapbox.com/styles/v1/',
                     username : 'mapbox',
-                    style_id : 'light-v10',
+                    style_id : 'dark-v11',
                     width : (size.width / 2),
                     height : (size.height / 2),
                     overlay : '',
@@ -55,6 +55,28 @@ function createMap(points, size, provider, callback) {
                 mapbox.center[0] = parseFloat((mapbox.center[0] / mapbox.points.length).toFixed(4));
                 mapbox.center[1] = parseFloat((mapbox.center[1] / mapbox.points.length).toFixed(4));
 
+                // Hardcoding center and bounds here
+                // console.log('Mapbox Center Coordinates:', mapbox.center);
+                // Mapbox Center Coordinates:
+                // 0 51.082
+                // 1 5.9398
+                    // -> 51°04'55.2"N, 5°55'48.0"E
+
+                // console.log('Mapbox Bounds:', mapbox.bounds);
+                // 0 51.36245
+                // 1 6.17929
+                // 2 50.81863
+                // 3 5.68184
+                    // -> 51°21'44.8"N 6°10'45.4"E  (TopRightCorner)
+                    // -> 50°49'07.1"N 5°40'54.6"E (Bottom Left)
+
+                // const hardcodedBounds = [ 52.989203, 4.223006, 50.672760, 6.680855]; // [maxLat, maxLng, minLat, minLng]
+                // const hardcodedCenter = [(hardcodedBounds[0] + hardcodedBounds[2]) / 2, (hardcodedBounds[1] + hardcodedBounds[3]) / 2];
+
+                // Use hardcoded bounds and center
+                // mapbox.bounds = hardcodedBounds;
+                // mapbox.center = hardcodedCenter;
+
                 mapbox.size = [
                     Math.abs(mapbox.bounds[1] - mapbox.bounds[3]), // width (lng)
                     Math.abs(mapbox.bounds[0] - mapbox.bounds[2])  // height (lat)
@@ -78,7 +100,6 @@ function createMap(points, size, provider, callback) {
                 mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.start[1]},${mapbox.start[0]})`;
                 mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.finish[1]},${mapbox.finish[0]})`;
                 mapbox.options.overlay += `,path-5+286ecf-1(${urlencode(polyline.encode(mapbox.points))})`;
-
             }
             else if (mapbox.options.boundSource === 'markers') {
                 // Use provided markers to calculate bounds, center, and offsets
@@ -87,12 +108,12 @@ function createMap(points, size, provider, callback) {
                     // Latitude: 47.4235° N Longitude: -121.5467° W
                     [49.1967, -123.1815], // Vancouver International Airport (YVR)
                     [49.0847, -121.4223], // Lindeman Lake, British Columbia, Canada
+                    [49.2421, -122.9939], // Burnaby
                     [49.0, -122.0], // Matsqui Trail Regional Park, Abbotsford, British Columbia, Canada
                     [49.3665, -122.3946], // Golden Ears Provincial Park, British Columbia, Canada
                     [49.3439, -123.0185], // Lynn Canyon Park, British Columbia, Canada
                     [49.5075, -123.2324], // Tunnel Bluffs Hike, British Columbia, Canada
-                    [49.3439, -123.0185], // Lynn Canyon Park, British Columbia, Canada
-                    [49.2421, -122.9939], // Burnaby
+                    [49.1867, -122.8490], // Happy Singh
                     // [latitude, longitude]  // Replace longitude, latitude with your actual coordinates
                 ];
                 const AbbotsfordCoordinates = [
@@ -139,7 +160,7 @@ function createMap(points, size, provider, callback) {
                 console.log('Mapbox Center Longitude:', _bounds);
 
                 mapbox.options.overlay = '';
-                mapbox.options.overlay += `path-1+343432-0(${urlencode(polyline.encode(_bounds))})`; // 
+                mapbox.options.overlay += `path-1+343432-0(${urlencode(polyline.encode(_bounds))})`; //
                 mapbox.options.overlay += `,pin-s-heart+ff0000(${AbbotsfordCoordinates[0][1]},${AbbotsfordCoordinates[0][0]})`;
                 // Iterate over the markerCoordinates array to construct the overlay string
                 markerCoordinates.forEach(coord => {
