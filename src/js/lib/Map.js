@@ -20,16 +20,17 @@ function createMap(points, size, provider, callback) {
                 finish : null,
 
                 options : {
-                    steps : 100, // ~ 100
+                    steps : 1000, // ~ 100
                     endpoint : 'https://api.mapbox.com/styles/v1/',
-                    username : 'mapbox',
-                    style_id : 'dark-v11',
+                    username : 'pradeep-venkatachalam',
+                    style_id : 'cly64s8oh00da01pm23ow4zoo',
                     width : (size.width / 2),
                     height : (size.height / 2),
                     overlay : '',
                     location : 'auto',
                     boundSource: 'gpsData', // 'gpsData or markers'
-                    token : 'pk.eyJ1IjoiYWx0ZXJlYnJvIiwiYSI6ImNrZWhrMTR0aTFuZmUyeWx0c2dkemFlencifQ._7m9LHScKO_nv4HCXtsgaQ'
+                    token : 'pk.eyJ1IjoicHJhZGVlcC12ZW5rYXRhY2hhbGFtIiwiYSI6ImNseTY0cTd6OTAzcjUya3Nha2kxajU0bG4ifQ.hmQvCMBywifhF0JC4Kd5_Q'
+                    // token : 'pk.eyJ1IjoiYWx0ZXJlYnJvIiwiYSI6ImNrZWhrMTR0aTFuZmUyeWx0c2dkemFlencifQ._7m9LHScKO_nv4HCXtsgaQ'
                 }
             };
 
@@ -97,9 +98,9 @@ function createMap(points, size, provider, callback) {
                 // Initialize the overlay string
                 mapbox.options.overlay = '';
                 mapbox.options.overlay += `path-1+343432-0(${urlencode(polyline.encode(_bounds))})`; // path-1+343432-0
-                mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.start[1]},${mapbox.start[0]})`;
-                mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.finish[1]},${mapbox.finish[0]})`;
-                mapbox.options.overlay += `,path-5+286ecf-1(${urlencode(polyline.encode(mapbox.points))})`;
+                // mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.start[1]},${mapbox.start[0]})`;
+                // mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.finish[1]},${mapbox.finish[0]})`;
+                mapbox.options.overlay += `,path-1+FFA500-2(${urlencode(polyline.encode(mapbox.points))})`;
             }
             else if (mapbox.options.boundSource === 'markers') {
                 // Use provided markers to calculate bounds, center, and offsets

@@ -32,7 +32,9 @@ function readGPX(file, callback) {
             let lon = parseFloat( point.getAttribute('lon') );
             let lat = parseFloat( point.getAttribute('lat') );
             let elevation = point.getElementsByTagName('ele')[0].textContent;
-            let time = point.getElementsByTagName('time')[0].textContent;
+            // let time = point.getElementsByTagName('time')[0].textContent;
+            let time = 0;
+
 
             trackpoints.push({ lon, lat, elevation, time });
         }
