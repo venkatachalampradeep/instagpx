@@ -1,207 +1,172 @@
 import polyline from '@mapbox/polyline';
 import urlencode from 'urlencode';
+import {Data} from '../config.js';
 
-function createMap(points, size, provider, callback) {
-
-    // console.log(size);
+function createMap(points, size, callback) {
 
     let _output = '';
-    switch (provider) {
+    const mapbox = {
+        interval: 0,
+        points: [],
+        center: [0, 0],
+        bounds: [0, 0, 0, 0], // maxLat, maxLng, minLat, minLng
+        size: [0, 0], // width (lng), height (lat)
+        start: null,
+        finish: null,
 
-        case 'mapbox' :
-            const mapbox = {
-
-                interval : 0,
-                points : [],
-                center : [0, 0],
-                bounds : [0, 0, 0, 0], // maxlat, maxlng, minlat, minlng
-                size : [0, 0], // width (lng), height (lat)
-                start : null,
-                finish : null,
-
-                options : {
-                    steps : 1000, // ~ 100
-                    endpoint : 'https://api.mapbox.com/styles/v1/',
-                    username : 'pradeep-venkatachalam',
-                    style_id : 'cly64s8oh00da01pm23ow4zoo',
-                    width : (size.width / 2),
-                    height : (size.height / 2),
-                    overlay : '',
-                    location : 'auto',
-                    boundSource: 'gpsData', // 'gpsData or markers'
-                    token : 'pk.eyJ1IjoicHJhZGVlcC12ZW5rYXRhY2hhbGFtIiwiYSI6ImNseTY0cTd6OTAzcjUya3Nha2kxajU0bG4ifQ.hmQvCMBywifhF0JC4Kd5_Q'
-                    // token : 'pk.eyJ1IjoiYWx0ZXJlYnJvIiwiYSI6ImNrZWhrMTR0aTFuZmUyeWx0c2dkemFlencifQ._7m9LHScKO_nv4HCXtsgaQ'
-                }
-            };
-
-            if (mapbox.options.boundSource === 'gpsData') {
-                // Use GPS data to calculate bounds, center, and offsets
-                // Your existing logic for GPS data processing
-                mapbox.bounds = [ points[0][1], points[0][0], points[0][1], points[0][0] ];
-                mapbox.interval = (points.length <= mapbox.options.steps) ? points.length : Math.ceil(points.length / mapbox.options.steps);
-
-                for ( let i = 0; i < points.length; i += mapbox.interval ) {
-
-                    mapbox.points.push([points[i][1], points[i][0]]);
-
-                    mapbox.center[0] += points[i][1]; // latitude
-                    mapbox.center[1] += points[i][0]; // longitude
-
-                    mapbox.bounds[0] = Math.max(mapbox.bounds[0], points[i][1]);
-                    mapbox.bounds[1] = Math.max(mapbox.bounds[1], points[i][0]);
-                    mapbox.bounds[2] = Math.min(mapbox.bounds[2], points[i][1]);
-                    mapbox.bounds[3] = Math.min(mapbox.bounds[3], points[i][0]);
-                }
-
-                mapbox.center[0] = parseFloat((mapbox.center[0] / mapbox.points.length).toFixed(4));
-                mapbox.center[1] = parseFloat((mapbox.center[1] / mapbox.points.length).toFixed(4));
-
-                // Hardcoding center and bounds here
-                // console.log('Mapbox Center Coordinates:', mapbox.center);
-                // Mapbox Center Coordinates:
-                // 0 51.082
-                // 1 5.9398
-                    // -> 51°04'55.2"N, 5°55'48.0"E
-
-                // console.log('Mapbox Bounds:', mapbox.bounds);
-                // 0 51.36245
-                // 1 6.17929
-                // 2 50.81863
-                // 3 5.68184
-                    // -> 51°21'44.8"N 6°10'45.4"E  (TopRightCorner)
-                    // -> 50°49'07.1"N 5°40'54.6"E (Bottom Left)
-
-                // const hardcodedBounds = [ 52.989203, 4.223006, 50.672760, 6.680855]; // [maxLat, maxLng, minLat, minLng]
-                // const hardcodedCenter = [(hardcodedBounds[0] + hardcodedBounds[2]) / 2, (hardcodedBounds[1] + hardcodedBounds[3]) / 2];
-
-                // Use hardcoded bounds and center
-                // mapbox.bounds = hardcodedBounds;
-                // mapbox.center = hardcodedCenter;
-
-                mapbox.size = [
-                    Math.abs(mapbox.bounds[1] - mapbox.bounds[3]), // width (lng)
-                    Math.abs(mapbox.bounds[0] - mapbox.bounds[2])  // height (lat)
-                ];
-                mapbox.start = mapbox.points[0];
-                mapbox.finish = mapbox.points[(mapbox.points.length - 1)];
-
-                let _offsetH = Math.max(mapbox.size[0], mapbox.size[1]) / 12; // Horizontal
-                let _offsetT = Math.max(mapbox.size[0], mapbox.size[1]) / 3;  // Top
-                let _offsetB = Math.max(mapbox.size[0], mapbox.size[1]) / 2;  // Bottom
-                let _bounds = [
-                    [mapbox.bounds[0] + _offsetT, mapbox.bounds[1] + _offsetH],
-                    [mapbox.bounds[0], mapbox.bounds[1]],
-                    [mapbox.bounds[2], mapbox.bounds[3]],
-                    [mapbox.bounds[2] - _offsetB, mapbox.bounds[3] - _offsetH],
-                ];
-
-                // Initialize the overlay string
-                mapbox.options.overlay = '';
-                mapbox.options.overlay += `path-1+343432-0(${urlencode(polyline.encode(_bounds))})`; // path-1+343432-0
-                // mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.start[1]},${mapbox.start[0]})`;
-                // mapbox.options.overlay += `,pin-l-marker+387edf(${mapbox.finish[1]},${mapbox.finish[0]})`;
-                mapbox.options.overlay += `,path-1+FFA500-2(${urlencode(polyline.encode(mapbox.points))})`;
-            }
-            else if (mapbox.options.boundSource === 'markers') {
-                // Use provided markers to calculate bounds, center, and offsets
-                const markerCoordinates = [
-                    // Sample Coordinates
-                    // Latitude: 47.4235° N Longitude: -121.5467° W
-                    [49.1967, -123.1815], // Vancouver International Airport (YVR)
-                    [49.0847, -121.4223], // Lindeman Lake, British Columbia, Canada
-                    [49.2421, -122.9939], // Burnaby
-                    [49.0, -122.0], // Matsqui Trail Regional Park, Abbotsford, British Columbia, Canada
-                    [49.3665, -122.3946], // Golden Ears Provincial Park, British Columbia, Canada
-                    [49.3439, -123.0185], // Lynn Canyon Park, British Columbia, Canada
-                    [49.5075, -123.2324], // Tunnel Bluffs Hike, British Columbia, Canada
-                    [49.1867, -122.8490], // Happy Singh
-                    // [latitude, longitude]  // Replace longitude, latitude with your actual coordinates
-                ];
-                const AbbotsfordCoordinates = [
-                [49.0514, -122.3578],
-                ];
-                // Reset bounds and center
-                let [minLat, minLng] = markerCoordinates[0];
-                let [maxLat, maxLng] = markerCoordinates[0];
-
-                // Calculate bounds based on marker coordinates
-                markerCoordinates.forEach(coord => {
-                    minLat = Math.min(minLat, coord[0]);
-                    maxLat = Math.max(maxLat, coord[0]);
-                    minLng = Math.min(minLng, coord[1]);
-                    maxLng = Math.max(maxLng, coord[1]);
-                });
-
-                // Calculate center
-                const centerLat = (minLat + maxLat) / 2;
-                const centerLng = (minLng + maxLng) / 2;
-                console.log('Mapbox Center Longitude:', centerLng);
-
-                // Set bounds
-                mapbox.bounds = [maxLat, maxLng, minLat, minLng];
-                mapbox.center = [centerLat, centerLng];
-                console.log('Mapbox Center Coordinates:', mapbox.center);
-
-                mapbox.size = [
-                    Math.abs(mapbox.bounds[1] - mapbox.bounds[3]), // width (lng)
-                    Math.abs(mapbox.bounds[0] - mapbox.bounds[2])  // height (lat)
-                ];
-
-                // Set offsets (adjust as needed)
-                let _offsetH = 0.5 + (Math.max(mapbox.size[0], mapbox.size[1]) / 100); // Horizontal
-                let _offsetT = Math.max(mapbox.size[0], mapbox.size[1]) / 20;  // Top
-                let _offsetB = Math.max(mapbox.size[0], mapbox.size[1]) / 10;  // Bottom
-
-                let _bounds = [
-                    [mapbox.bounds[0] + _offsetT, mapbox.bounds[1] + _offsetH],
-                    [mapbox.bounds[0], mapbox.bounds[1]],
-                    [mapbox.bounds[2], mapbox.bounds[3]],
-                    [mapbox.bounds[2] - _offsetB, mapbox.bounds[3] - _offsetH],
-                ];
-                console.log('Mapbox Center Longitude:', _bounds);
-
-                mapbox.options.overlay = '';
-                mapbox.options.overlay += `path-1+343432-0(${urlencode(polyline.encode(_bounds))})`; //
-                mapbox.options.overlay += `,pin-s-heart+ff0000(${AbbotsfordCoordinates[0][1]},${AbbotsfordCoordinates[0][0]})`;
-                // Iterate over the markerCoordinates array to construct the overlay string
-                markerCoordinates.forEach(coord => {
-                // Append each coordinate to the overlay string
-                mapbox.options.overlay += `,pin-s-marker+387edf(${coord[1]},${coord[0]})`;
-            });
-
-            }
-
-            let _urlMapbox = `${mapbox.options.endpoint}${mapbox.options.username}/${mapbox.options.style_id}/static/${mapbox.options.overlay}/${mapbox.options.location}/${mapbox.options.width}x${mapbox.options.height}@2x`;
-                _urlMapbox += `?logo=false&attribution=false&access_token=${mapbox.options.token}`;
-
-            _output = _urlMapbox;
-            break;
-
-        default:
-            _output = false;
-            break;
+    options: {
+        endpoint: 'https://api.mapbox.com/styles/v1/',
+        username: 'pradeep-venkatachalam',
+        style_id: 'cly8oux6f00hx01pm49p6ds5n',
+        width: size.width / 2,
+        height: size.height / 2,
+        overlay: '',
+        location: 'auto',
+        steps: Data.mapboxOptions.steps,
+        boundSource: Data.mapboxOptions.boundSource,
+        overlayPathColor: Data.mapboxOptions.overlayPathColor,
+        zoomFactor: Data.mapboxOptions.zoomFactor,
+        hardcodeBounds: Data.mapboxOptions.zoomFactor,
+        token: 'pk.eyJ1IjoicHJhZGVlcC12ZW5rYXRhY2hhbGFtIiwiYSI6ImNseTZ4cGM0OTAwNHYyanM5cmgxa3A5aGwifQ.Hudkk5q4qTN13LSdxsdVXw'
     }
+};
 
-    _output = _output || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const calculateBoundsAndCenter = (coords) => {
+    let [minLat, minLng] = coords[0];
+    let [maxLat, maxLng] = coords[0];
 
-    let _imageMap = new Image();
-        _imageMap.src = _output;
-        _imageMap.crossOrigin = "Anonymous";
-        _imageMap.onload = function() {
+    coords.forEach(([lat, lng]) => {
+        minLat = Math.min(minLat, lat);
+        maxLat = Math.max(maxLat, lat);
+        minLng = Math.min(minLng, lng);
+        maxLng = Math.max(maxLng, lng);
+    });
 
-            let _w = _imageMap.width;
-            let _h = _imageMap.height;
+    const centerLat = (minLat + maxLat) / 2;
+    const centerLng = (minLng + maxLng) / 2;
+    return { bounds: [maxLat, maxLng, minLat, minLng], center: [centerLat, centerLng] };
+};
 
-            let _el = document.createElement('canvas');
-                _el.width = _w;
-                _el.height = _h;
-            let _ctx = _el.getContext('2d');
-                _ctx.drawImage(_imageMap, 0, 0, _w, _h);
+const calculateSizeAndOffsets = (bounds, zoomFactor) => {
+    const size = [
+        Math.abs(bounds[1] - bounds[3]), // width (lng)
+        Math.abs(bounds[0] - bounds[2])  // height (lat)
+    ];
 
-            let _ctxData = _ctx.getImageData(0, 0, _w, _h);
-            callback(_ctxData);
+    const maxSize = Math.max(size[0], size[1]);
+    const offsets = {
+        horizontal: (maxSize / 20) * zoomFactor, // Reduced Horizontal Offset
+        top: (maxSize / 10) * zoomFactor,  // Reduced Top Offset
+        bottom: (maxSize / 20) * zoomFactor  // Reduced Bottom Offset
+    };
+
+    return { size, offsets };
+};
+
+const buildMapboxUrl = (mapbox) => {
+    const { endpoint, username, style_id, overlay, location, width, height, token } = mapbox.options;
+    let url = `${endpoint}${username}/${style_id}/static/${overlay}/${location}/${width}x${height}@2x`;
+    url += `?logo=false&attribution=false&access_token=${token}`;
+    return url;
+};
+
+const handleImageLoad = (imageUrl, callback) => {
+    const image = new Image();
+    image.src = imageUrl;
+    image.crossOrigin = "Anonymous";
+    image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, image.width, image.height);
+        const ctxData = ctx.getImageData(0, 0, image.width, image.height);
+        callback(ctxData);
+    };
+};
+
+    if (mapbox.options.boundSource === 'gpsData') {
+        // Use GPS data to calculate bounds, center, and offsets
+        // Your existing logic for GPS data processing
+        mapbox.bounds = [points[0][1], points[0][0], points[0][1], points[0][0]];
+        mapbox.interval = (points.length <= mapbox.options.steps) ? points.length : Math.ceil(points.length / mapbox.options.steps);
+
+        points.forEach((point, index) => {
+            if (index % mapbox.interval === 0) {
+                mapbox.points.push([point[1], point[0]]);
+                mapbox.center[0] += point[1];
+                mapbox.center[1] += point[0];
+                mapbox.bounds[0] = Math.max(mapbox.bounds[0], point[1]);
+                mapbox.bounds[1] = Math.max(mapbox.bounds[1], point[0]);
+                mapbox.bounds[2] = Math.min(mapbox.bounds[2], point[1]);
+                mapbox.bounds[3] = Math.min(mapbox.bounds[3], point[0]);
+            }
+        });
+
+        mapbox.center[0] = parseFloat((mapbox.center[0] / mapbox.points.length).toFixed(4));
+        mapbox.center[1] = parseFloat((mapbox.center[1] / mapbox.points.length).toFixed(4));
+
+        if (mapbox.options.hardcodeBounds) {
+            const hardcodedBounds = [52.989203, 4.223006, 50.672760, 6.680855]; // [maxLat, maxLng, minLat, minLng]
+                                 //  52N,4E (top-right),   50N, 6E (top-left)
+            const hardcodedCenter = [(hardcodedBounds[0] + hardcodedBounds[2]) / 2, (hardcodedBounds[1] + hardcodedBounds[3]) / 2];
+
+            mapbox.bounds = hardcodedBounds;
+            mapbox.center = hardcodedCenter;
         }
 
-}
+        const { size, offsets } = calculateSizeAndOffsets(mapbox.bounds, mapbox.options.zoomFactor);
 
+        mapbox.size = size;
+        mapbox.start = mapbox.points[0];
+        mapbox.finish = mapbox.points[mapbox.points.length - 1];
+
+        const _bounds = [
+            [mapbox.bounds[0] + offsets.top, mapbox.bounds[1] + offsets.horizontal],
+            [mapbox.bounds[0], mapbox.bounds[1]],
+            [mapbox.bounds[2], mapbox.bounds[3]],
+            [mapbox.bounds[2] - offsets.bottom, mapbox.bounds[3] - offsets.horizontal],
+        ];
+
+        // Initialize the overlay string
+        mapbox.options.overlay += `path-0+343432-5(${urlencode(polyline.encode(_bounds))})`;
+        mapbox.options.overlay += `,path-2+BA55D3-5(${urlencode(polyline.encode(mapbox.points))})`; // Medium Orchid
+    }
+
+    else if (mapbox.options.boundSource === 'markers') {
+        const markerCoordinates = [
+            [41.3275, 19.8187], // Tirana
+            [42.0683, 19.5126], // Shkoder
+            [42.4610, 19.8778], // Valbona
+            [42.4247, 18.7712], // Kotor
+        ];
+
+        const { bounds, center } = calculateBoundsAndCenter(markerCoordinates);
+        const { size, offsets } = calculateSizeAndOffsets(bounds, mapbox.options.zoomFactor);
+
+        mapbox.bounds = bounds;
+        mapbox.center = center;
+        mapbox.size = size;
+
+        const _bounds = [
+            [bounds[0] + offsets.top, bounds[1] + offsets.horizontal],
+            [bounds[0], bounds[1]],
+            [bounds[2], bounds[3]],
+            [bounds[2] - offsets.bottom, bounds[3] - offsets.horizontal],
+        ];
+
+        mapbox.size = [
+            Math.abs(mapbox.bounds[1] - mapbox.bounds[3]), // width (lng)
+            Math.abs(mapbox.bounds[0] - mapbox.bounds[2])  // height (lat)
+        ];
+
+        mapbox.options.overlay = `path-0+343432-0(${urlencode(polyline.encode(_bounds))})`;
+        markerCoordinates.forEach(coord => {
+            mapbox.options.overlay += `,pin-s-marker+387edf(${coord[1]},${coord[0]})`;
+        });
+    }
+
+    const url = buildMapboxUrl(mapbox);
+    handleImageLoad(url, callback);
+}
 export default createMap;

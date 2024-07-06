@@ -154,7 +154,7 @@ const App =  {
                     Data.gpxLoaded = true;
                     this.postGPX();
 
-                    createMap(gpxData.points, this.outputSize, 'mapbox', (imageMapData) => {
+                    createMap(gpxData.points, this.outputSize, (imageMapData) => {
 
                         Data.imageMap = imageMapData
                         Data.imageMapLoaded = true;
@@ -197,7 +197,7 @@ const App =  {
 
             if ( this.imageSourceMap ) {
 
-                createMap(this.gpx.points, this.outputSize, 'mapbox', (imageMapData) => {
+                createMap(this.gpx.points, this.outputSize, (imageMapData) => {
 
                     Data.imageMap = imageMapData
                     Data.imageMapLoaded = true;
