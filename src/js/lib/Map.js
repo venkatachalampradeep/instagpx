@@ -26,7 +26,7 @@ function createMap(points, size, callback) {
         boundSource: Data.mapboxOptions.boundSource,
         overlayPathColor: Data.mapboxOptions.overlayPathColor,
         zoomFactor: Data.mapboxOptions.zoomFactor,
-        hardcodeBounds: Data.mapboxOptions.zoomFactor,
+        hardcodeBounds: Data.mapboxOptions.hardcodeBounds,
         token: 'pk.eyJ1IjoicHJhZGVlcC12ZW5rYXRhY2hhbGFtIiwiYSI6ImNseTZ4cGM0OTAwNHYyanM5cmgxa3A5aGwifQ.Hudkk5q4qTN13LSdxsdVXw'
     }
 };
@@ -127,6 +127,7 @@ const handleImageLoad = (imageUrl, callback) => {
             [mapbox.bounds[2], mapbox.bounds[3]],
             [mapbox.bounds[2] - offsets.bottom, mapbox.bounds[3] - offsets.horizontal],
         ];
+
 
         // Initialize the overlay string
         mapbox.options.overlay += `path-0+343432-5(${urlencode(polyline.encode(_bounds))})`;

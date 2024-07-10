@@ -32,8 +32,8 @@ function readGPX(file, callback) {
             let lon = parseFloat( point.getAttribute('lon') );
             let lat = parseFloat( point.getAttribute('lat') );
             let elevation = point.getElementsByTagName('ele')[0].textContent;
-            // let time = point.getElementsByTagName('time')[0].textContent;
-            let time = 0;
+            let time = point.getElementsByTagName('time')[0].textContent;
+            // let time = 0;
 
             trackpoints.push({ lon, lat, elevation, time });
         }
@@ -111,7 +111,12 @@ function readGPX(file, callback) {
         }
 
         // const duration = msToTime( Math.abs(end.getTime() - start.getTime()) );
-        const duration = msToTime( Math.abs(end - start) );
+        const duration = {
+            hours: 2,
+            minutes: 2,
+            seconds: 24,
+            ms: (2 * 60 * 60 * 1000) + (2 * 60 * 1000) + (24 * 1000) // This calculates the total milliseconds for 2h 2m 24s
+        };
         const distance = (function() {
 
             let _distance = 0;
@@ -128,35 +133,17 @@ function readGPX(file, callback) {
         const pace = (function() {
 
             let _msKm = duration.ms / distance.km;
-            let _msMi = duration.ms / distance.mi;
 
             return {
                 'perKm' : {
                     'minutes' : new Date( _msKm ).getUTCMinutes(),
                     'seconds' : new Date( _msKm ).getUTCSeconds()
-                },
-                'perMile' : {
-                    'minutes' : new Date( _msMi ).getUTCMinutes(),
-                    'seconds' : new Date( _msMi ).getUTCSeconds()
                 }
             }
-
-            // return {
-            //     'perKm' : {
-            //         'minutes' : String(new Date( _msKm ).getUTCMinutes()).padStart(2, '0'),
-            //         'seconds' : String(new Date( _msKm ).getUTCSeconds()).padStart(2, '0')
-            //     },
-            //     'perMile' : {
-            //         'minutes' : String(new Date( _msMi ).getUTCMinutes()).padStart(2, '0'),
-            //         'seconds' : String(new Date( _msMi ).getUTCSeconds()).padStart(2, '0')
-            //     }
-            // }
-
         }());
 
         const speed = {
             'kmh' : (distance.km * 3600000) / duration.ms,
-            'mih' : (distance.mi * 3600000) / duration.ms
         }
 
         const elevation = (function() {

@@ -48,12 +48,12 @@ const Data = {
         timestampPattern: 0,
         promote: true,
         graph: false,     // Elevation graph
-        showText: false   // Toggle text display
+        showText: true   // Toggle text display
     },
     mapboxOptions: {
-        steps: 500,
-        zoomFactor: 10, // Default zoom factor (1 means no zoom, <1 zoom in, >1 zoom out)
-        boundSource: 'markers',
+        steps: 1000,
+        zoomFactor: 1, // Default zoom factor (1 means no zoom, <1 zoom in, >1 zoom out)
+        boundSource: 'gpsData', //markers ; gpsData
         hardcodeBounds: false,
         overlayPathColor: 'BA55D3' // Medium Orchid
         // overlayPathColor: '6A0DAD' // Bright Purple
