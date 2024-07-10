@@ -32,8 +32,9 @@ function readGPX(file, callback) {
             let lon = parseFloat( point.getAttribute('lon') );
             let lat = parseFloat( point.getAttribute('lat') );
             let elevation = point.getElementsByTagName('ele')[0].textContent;
-            let time = point.getElementsByTagName('time')[0].textContent;
-            // let time = 0;
+            // TODO: Make this a flag to hardcode time here. 
+            // let time = point.getElementsByTagName('time')[0].textContent;
+            let time = 0;
 
             trackpoints.push({ lon, lat, elevation, time });
         }
@@ -64,12 +65,6 @@ function readGPX(file, callback) {
             hours += hoursDays;
 
         return { hours, minutes, seconds, ms }
-        // return {
-        //     hours : String(hours).padStart(2, '0'),
-        //     minutes : String(minutes).padStart(2, '0'),
-        //     seconds : String(seconds).padStart(2, '0'),
-        //     ms : ms
-        // }
     }
 
     function GPX(gpxData) {
@@ -79,19 +74,6 @@ function readGPX(file, callback) {
             catch(e) { _trkpts = _xmlDoc.documentElement.getElementsByTagName( 'trkpt' ) }
 
         const trackpoints = gpxToJSON(_trkpts);
-
-        // let _totalDistance = 0;
-        // for (let i = 0; i < trackpoints.length -1; i++) {
-        //     let _elevation = trackpoints[i].elevation;
-        //     let _distance = pointsDistance( trackpoints[i], trackpoints[i+1] );
-        //     console.log(i, Math.round(_elevation), parseFloat((_totalDistance).toFixed(3)));
-        //     _totalDistance += _distance;
-        // }
-
-        // let a = new Date(trackpoints[0].time).getTime();
-        // console.log('a: ', a);
-        // let b = tinytime('{dddd}, {DD} {MMMM} {YYYY} · {h}:{mm}{a}')
-        // console.log( b.render(new Date(a)) )
 
         const start = new Date(trackpoints[0].time).getTime();
         const end = new Date(trackpoints[trackpoints.length - 1].time).getTime();
@@ -166,7 +148,6 @@ function readGPX(file, callback) {
                 eleForMinMax.push( trackpoints[i].elevation );
                 richElevation.push( {
                     elevation: trackpoints[i].elevation,
-                    // time: msToTime(timeDiff).ms,
                     dist: dist
                 });
 
@@ -186,7 +167,6 @@ function readGPX(file, callback) {
                 min: Math.min.apply( null, eleForMinMax ),
                 loss: loss,
                 gain: gain,
-                // average : averageElevation(_trkpts)
             }
 
         }());
