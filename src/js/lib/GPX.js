@@ -33,8 +33,8 @@ function readGPX(file, callback) {
             let lat = parseFloat( point.getAttribute('lat') );
             let elevation = point.getElementsByTagName('ele')[0].textContent;
             // TODO: Make this a flag to hardcode time here. 
-            // let time = point.getElementsByTagName('time')[0].textContent;
-            let time = 0;
+            let time = point.getElementsByTagName('time')[0].textContent;
+            // let time = 0;
 
             trackpoints.push({ lon, lat, elevation, time });
         }
@@ -92,13 +92,13 @@ function readGPX(file, callback) {
             }
         }
 
-        // const duration = msToTime( Math.abs(end.getTime() - start.getTime()) );
-        const duration = {
-            hours: 2,
-            minutes: 2,
-            seconds: 24,
-            ms: (2 * 60 * 60 * 1000) + (2 * 60 * 1000) + (24 * 1000) // This calculates the total milliseconds for 2h 2m 24s
-        };
+         const duration = msToTime( Math.abs(end - start) );
+        // const duration = {
+        //     hours: 2,
+        //     minutes: 2,
+        //     seconds: 24,
+        //     ms: (2 * 60 * 60 * 1000) + (2 * 60 * 1000) + (24 * 1000) // This calculates the total milliseconds for 2h 2m 24s
+        // };
         const distance = (function() {
 
             let _distance = 0;
