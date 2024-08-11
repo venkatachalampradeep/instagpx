@@ -9,7 +9,7 @@
                 <p>
                     <input type="file" accept=".gpx" @change="loadGPX" id="user-file-gpx" />
                     <label v-if="gpxFile" for="user-file-gpx">{{ gpxFile }}</label>
-                    <label v-else for="user-file-gpx">Select your <strong>.GPX</strong> file</label>
+                    <label v-else for="user-file-gpx"><strong>.GPX</strong> file</label>
                 </p>
             </div>
             <div>
@@ -17,7 +17,7 @@
                 <p>
                     <input type="file" accept="image/*" @change="loadIMG" id="user-file-image" />
                     <label v-if="imageFile" for="user-file-image">{{ imageFile }}</label>
-                    <label v-else for="user-file-image">Select your <strong>Image</strong> file</label>
+                    <label v-else for="user-file-image"><strong>Image</strong> file</label>
                 </p>
             </div>
         </section>
@@ -39,7 +39,7 @@
 
                     <p class="form-input-container">
                         <label for="activity-title">Title</label>
-                        <input type="text" placeholder="Write your activity title here" name="activity-title" id="activity-title" maxlength="140" v-model="options.title" />
+                        <input type="text" placeholder="Activity Title" name="activity-title" id="activity-title" maxlength="140" v-model="options.title" />
                     </p>
 
                     <p class="form-submit-container">

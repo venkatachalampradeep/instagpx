@@ -1,7 +1,7 @@
 <template>
     <footer role="contentinfo">
         <div class="footer-content">
-            <p>Design &amp; Development by <strong><a href="https://twitter.com/alterebro" target="_blank" rel="noopener noreferrer" title="Follow @alterebro on Twitter!">@alterebro</a></strong></p>
+            <p>Inspired by <strong><a href="https://twitter.com/alterebro" target="_blank" rel="noopener noreferrer" title="Follow @alterebro on Twitter!">@alterebro</a></strong></p>
             <nav>
                 <h4>Share! :</h4>
                 <ul>
@@ -20,11 +20,6 @@ export default {
     data() {
         return {
             networks : [
-                { modal : true, network : "Twitter", url : "https://twitter.com/intent/tweet?text={TEXT}&url={URL}&via=alterebro" },
-                { modal : true, network : "FaceBook", url : "https://www.facebook.com/sharer.php?u={URL}" },
-                { modal : true, network : "LinkedIn", url : "https://www.linkedin.com/shareArticle?mini=true&url={URL}&title={TITLE}&summary={TEXT}&source=moro.es" },
-                { modal : false, network : "E-Mail", url : "mailto:?subject={TITLE}&body={TEXT}:%0A{URL}" },
-                { modal : true, network : "Telegram", url : "https://telegram.me/share/url?url={URL}&amp;text={TEXT} "}
             ]
         };
     },
