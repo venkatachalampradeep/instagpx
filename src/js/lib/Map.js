@@ -17,7 +17,7 @@ function createMap(points, size, callback) {
     options: {
         endpoint: 'https://api.mapbox.com/styles/v1/',
         username: 'pradeep-venkatachalam',
-        style_id: 'cly8oux6f00hx01pm49p6ds5n',
+        style_id: 'cm3umo3rf001901qy2a3x6p83',
         width: size.width / 2,
         height: size.height / 2,
         overlay: '',
@@ -27,7 +27,7 @@ function createMap(points, size, callback) {
         overlayPathColor: Data.mapboxOptions.overlayPathColor,
         zoomFactor: Data.mapboxOptions.zoomFactor,
         hardcodeBounds: Data.mapboxOptions.hardcodeBounds,
-        token: 'pk.eyJ1IjoicHJhZGVlcC12ZW5rYXRhY2hhbGFtIiwiYSI6ImNseTZ4cGM0OTAwNHYyanM5cmgxa3A5aGwifQ.Hudkk5q4qTN13LSdxsdVXw'
+        token: 'pk.eyJ1IjoicHJhZGVlcC12ZW5rYXRhY2hhbGFtIiwiYSI6ImNtMzY5MWdnNDAyZjEybHNmZ3lxNjd6MmEifQ.78WyuIqV82-UL1EqXAI_FA'
     }
 };
 
